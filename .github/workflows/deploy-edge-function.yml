@@ -16,17 +16,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - run: npm install
-
-      - run: npm run build
-
+      
       - uses: supabase/setup-cli@v1
         with:
           version: latest
 
-      - run: cd supabase && supabase functions deploy --project-ref $PROJECT_ID
+      - run: supabase functions deploy --project-ref $PROJECT_ID
