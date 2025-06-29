@@ -3,8 +3,42 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 console.log("INIT: Auth Check");
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://thecodestreak.vercel.app",
+];
+
 Deno.serve(async (req) => {
+  const origin = req.headers.get("origin");
+
+  const isAllowedOrigin = allowedOrigins.includes(origin || "");
+
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": isAllowedOrigin ? origin : allowedOrigins[0],
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE",
+  };
+
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  if (!isAllowedOrigin) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Origin not allowed",
+      }),
+      {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
   try {
+    const origin = req.headers.get("origin");
+
     const { email, name } = await req.json();
     console.log(`Received request: ${req.method} ${req.json()}`);
 
