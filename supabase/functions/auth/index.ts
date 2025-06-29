@@ -39,8 +39,10 @@ Deno.serve(async (req) => {
   try {
     const origin = req.headers.get("origin");
 
-    const { email, name } = await req.json();
-    console.log(`Received request: ${email}`);
+    const requestValue = await req.json();
+    console.log(`Received request: ${JSON.stringify(requestValue)}`);
+
+    const { email, name } = requestValue;
 
     // Validate required fields
     if (!email) {
