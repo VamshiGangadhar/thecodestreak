@@ -28,14 +28,15 @@ function Login() {
   };
 
   const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-    });
+    console.log("Initiating Google login...");
+    // const { error } = await supabase.auth.signInWithOAuth({
+    //   provider: "google",
+    // });
 
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
+    // if (error) {
+    //   setMessage(error.message);
+    //   return;
+    // }
   };
 
   return (
