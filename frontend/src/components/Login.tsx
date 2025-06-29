@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Form, FormGroup, Input, Label, Button } from "reactstrap";
-import { supabase } from "../supabaseClient"; // Adjust the import path to your setup
+import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -34,6 +34,7 @@ function Login() {
 
     if (error) {
       setMessage(error.message);
+      return;
     }
   };
 
