@@ -1,11 +1,12 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-console.log("Hello from Functions!");
+console.log("INIT: Auth Check");
 
 Deno.serve(async (req) => {
   try {
     const { email, name } = await req.json();
+    console.log(`Received request: ${req.method} ${req.json()}`);
 
     // Validate required fields
     if (!email) {

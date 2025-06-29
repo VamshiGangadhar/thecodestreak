@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Form, FormGroup, Input, Label, Button } from "reactstrap";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { checkUserProfile } from "../utils/checkUserProfile";
 
 function Login() {
   const [email, setEmail] = useState<string>("");
@@ -27,8 +28,12 @@ function Login() {
     navigate("/dashboard");
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     console.log("Initiating Google login...");
+    // If you need to check user profile, use the email state variable
+    const isAvaiable = await checkUserProfile(email);
+    console.log(`User profile check: ${isAvaiable}`);
     // const { error } = await supabase.auth.signInWithOAuth({
     //   provider: "google",
     // });
@@ -117,9 +122,8 @@ function Login() {
         </div>
 
         <Button
-          color="light"
-          className="w-100 border d-flex align-items-center justify-content-center gap-2 mb-2"
           onClick={handleGoogleLogin}
+          className="w-100 border d-flex align-items-center justify-content-center gap-2 mb-2"
         >
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"
