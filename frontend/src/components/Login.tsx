@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Form, FormGroup, Input, Label, Button } from "reactstrap";
 import { supabase } from "../supabaseClient"; // Adjust the import path to your setup
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [message, setMessage] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,6 +23,8 @@ function Login() {
     }
 
     setMessage("Login successful!");
+    localStorage.setItem("user", email);
+    navigate("/dashboard");
   };
 
   const handleGoogleLogin = async () => {
