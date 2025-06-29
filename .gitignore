@@ -16,8 +16,6 @@ supabase/functions/**/dist/
 # Deno cache (if used for Supabase functions)
 **/deno.lock
 **/deno.deps.ts
-**/deno.json
-**/deno.jsonc
 
 # Vercel
 .vercel/
