@@ -1,6 +1,9 @@
-import React from "react";
+import { useUser } from "../../../context/UserContext";
+import { supabase } from "../../../supabaseClient";
 
 const Dashboard = () => {
+  const { user } = useUser();
+  console.log({ user });
   return (
     <div className="dashboard-container">
       <h1>Welcome to your Dashboard!</h1>

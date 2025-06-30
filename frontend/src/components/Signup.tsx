@@ -7,6 +7,7 @@ interface FormState {
   password: string;
   firstName: string;
   lastName: string;
+  displayName: string;
 }
 
 export default function Signup() {
@@ -15,6 +16,7 @@ export default function Signup() {
     password: "",
     firstName: "",
     lastName: "",
+    displayName: "",
   });
   const [message, setMessage] = useState<string>("");
 
@@ -37,6 +39,8 @@ export default function Signup() {
         id: userId,
         first_name: form.firstName,
         last_name: form.lastName,
+        email: form.email,
+        display_name: form.displayName,
       });
 
       if (profileError) {
@@ -98,6 +102,21 @@ export default function Signup() {
               </FormGroup>
             </Col>
           </Row>
+
+          <FormGroup>
+            <Label for="displayName" className="small fw-semibold">
+              Display Name
+            </Label>
+            <Input
+              id="displayName"
+              type="text"
+              placeholder="Display Name"
+              value={form.displayName}
+              onChange={(e) =>
+                setForm({ ...form, displayName: e.target.value })
+              }
+            />
+          </FormGroup>
 
           <FormGroup>
             <Label for="email" className="small fw-semibold">

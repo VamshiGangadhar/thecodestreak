@@ -7,60 +7,30 @@ import {
   Nav,
   NavItem,
   NavLink,
-  Spinner,
 } from "reactstrap";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../../supabaseClient";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import AvatarDropdown from "../AvatarDropdown";
+import { useUser } from "../../context/UserContext";
+import { APPLICATION_NAME } from "../../constants/constants";
 
 function NavigationBar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [avatarAvailable, setAvatarAvailable] = useState<boolean | null>(null);
   const [isDark, setIsDark] = useState<boolean>(
     () => localStorage.getItem("theme") === "dark"
   );
-  const [user, setUser] = useState<any>(null);
+  const { user, logout } = useUser();
   const navigate = useNavigate();
 
   const toggle = () => setIsOpen(!isOpen);
 
   useEffect(() => {
-    const fetchAvatar = async () => {
-      const { data } = await supabase.storage
-        .from("avatars")
-        .createSignedUrl("user123.jpg", 3600);
-      if (data?.signedUrl) {
-        setAvatarUrl(data.signedUrl);
-        setAvatarAvailable(true);
-      } else {
-        setAvatarAvailable(false);
-      }
-    };
-    fetchAvatar();
-  }, []);
-
-  useEffect(() => {
     localStorage.setItem("theme", isDark ? "dark" : "light");
   }, [isDark]);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user || null);
-    });
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user || null);
-      }
-    );
-    return () => listener?.subscription.unsubscribe();
-  }, []);
-
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
+    await logout();
     navigate("/signin");
   };
 
@@ -74,7 +44,6 @@ function NavigationBar() {
     { name: "Dashboard", href: "/dashboard" },
   ];
 
-  console.log("User:", user);
   return (
     <Navbar
       expand="lg"
@@ -85,7 +54,7 @@ function NavigationBar() {
       style={{ backdropFilter: "blur(6px)" }}
     >
       <NavbarBrand href="/" className="fs-4 fw-bold">
-        thecodestreak
+        {APPLICATION_NAME}
       </NavbarBrand>
       <NavbarToggler onClick={toggle} />
       <Collapse isOpen={isOpen} navbar>
@@ -103,7 +72,6 @@ function NavigationBar() {
             </NavItem>
           ))}
 
-          {/* Theme Toggle */}
           <div
             role="button"
             onClick={() => setIsDark(!isDark)}
@@ -120,20 +88,15 @@ function NavigationBar() {
             {isDark ? <LightModeIcon /> : <DarkModeIcon />}
           </div>
 
-          {/* Avatar Dropdown - Using your new component */}
           <div className="ms-2">
-            {avatarAvailable === null ? (
-              <Spinner size="sm" />
-            ) : (
-              <AvatarDropdown
-                imagePath={user?.user_metadata?.avatar_url}
-                userName={user?.user_metadata?.name || "Guest"}
-                userEmail={user?.email || ""}
-                isLoggedIn={!!user}
-                onLogout={handleLogout}
-                onLogin={handleLogin}
-              />
-            )}
+            <AvatarDropdown
+              imagePath={user?.avatar_url || ""}
+              userName={user?.display_name || user?.first_name || "Guest"}
+              userEmail={user?.email || ""}
+              isLoggedIn={!!user}
+              onLogout={handleLogout}
+              onLogin={handleLogin}
+            />
           </div>
         </Nav>
       </Collapse>
