@@ -1,4 +1,3 @@
-import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
@@ -7,6 +6,7 @@ import NavigationBar from "./components/NavigationBar";
 import Dashboard from "./components/pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { UserProvider } from "./context/UserContext";
+import DailyChallenge from "./components/pages/DailyChallenge";
 
 function App() {
   return (
@@ -25,6 +25,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/dailyChallenge" element={<DailyChallenge />} />
+          {/* <Route path="/dashboard/profile" element={<ChooseLevel />} /> */}
         </Routes>
       </Router>
     </UserProvider>
