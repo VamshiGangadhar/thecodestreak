@@ -25,7 +25,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/dailyChallenge" element={<DailyChallenge />} />
+          <Route
+            path="/dailyChallenge"
+            element={
+              <ProtectedRoute>
+                <DailyChallenge />
+              </ProtectedRoute>
+            }
+          />
           {/* <Route path="/dashboard/profile" element={<ChooseLevel />} /> */}
         </Routes>
       </Router>

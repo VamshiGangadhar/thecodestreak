@@ -26,7 +26,7 @@ function Login() {
 
     setMessage("Login successful!");
     localStorage.setItem("user", email);
-    navigate("/dashboard");
+    navigate("/dailyChallenge");
   };
 
   const handleGoogleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
