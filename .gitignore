@@ -17,9 +17,6 @@ supabase/functions/**/dist/
 **/deno.lock
 **/deno.deps.ts
 
-# Vercel
-.vercel/
-vercel.json
 
 # Environment variables
 .env
