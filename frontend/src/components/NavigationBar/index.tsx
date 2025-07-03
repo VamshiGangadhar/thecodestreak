@@ -41,7 +41,7 @@ function NavigationBar() {
 
   const handleLogout = async () => {
     await logout();
-    // navigate("/signin");
+    navigate("/signin");
   };
 
   const handleLogin = () => {
@@ -262,9 +262,13 @@ function NavigationBar() {
             </div>
 
             <AvatarDropdown
-              imagePath={user?.avatar_url || ""}
-              userName={user?.display_name || user?.first_name || "Guest"}
-              userEmail={user?.email || ""}
+              imagePath={user && user.avatar_url ? user.avatar_url : null}
+              userName={
+                user && (user.display_name || user.first_name)
+                  ? user.display_name || user.first_name
+                  : "Guest"
+              }
+              userEmail={user && user.email ? user.email : ""}
               isLoggedIn={!!user}
               onLogout={handleLogout}
               onLogin={handleLogin}

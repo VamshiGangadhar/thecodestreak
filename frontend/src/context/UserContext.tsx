@@ -52,7 +52,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     await supabase.auth.signOut();
+    localStorage.clear();
     setUser(null);
+    await refreshUser();
   };
 
   return (
