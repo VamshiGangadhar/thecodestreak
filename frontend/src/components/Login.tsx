@@ -3,6 +3,7 @@ import { Form, FormGroup, Input, Label, Button } from "reactstrap";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import BrandHeader from "./BrandHeader";
 
 function Login() {
   const [email, setEmail] = useState<string>("");
@@ -46,117 +47,181 @@ function Login() {
 
   return (
     <div
-      className="d-flex justify-content-center align-items-center"
-      style={{ minHeight: "100vh", width: "100vw" }}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#f8fafc",
+        zIndex: 10,
+      }}
     >
-      <div className="p-4 rounded" style={{ width: "320px" }}>
-        {/* Logo */}
-        <div className="text-center mb-3">
-          <img
-            src="/logo192.png"
-            alt="thecodestreak"
-            style={{ width: "24px", height: "24px" }}
-          />
-          <h4 className="mt-2 fw-semibold">Sign in</h4>
-        </div>
-
-        {/* Message */}
-        {message && (
-          <div className="alert alert-info p-2 text-center small">
-            {message}
-          </div>
-        )}
-
-        {/* Form */}
-        <Form onSubmit={handleLogin}>
-          <FormGroup>
-            <Label for="email" className="small fw-semibold">
-              Email
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              placeholder="your@email.com"
-              type="email"
-              className="form-control"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label for="password" className="small fw-semibold">
-              Password
-            </Label>
-            <div style={{ position: "relative" }}>
-              <Input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                className="form-control"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                style={{ paddingRight: "2.5rem" }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                style={{
-                  position: "absolute",
-                  right: "0.5rem",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                  cursor: "pointer",
-                  outline: "none",
-                }}
-                tabIndex={-1}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
+      <div
+        className="card shadow-sm border-0 w-100"
+        style={{ maxWidth: "400px" }}
+      >
+        <div className="card-body p-5">
+          <div className="text-center mb-4">
+            <div className="mb-3">
+              <BrandHeader as="span" />
             </div>
-          </FormGroup>
+            <h2 className="h4 fw-semibold text-dark mb-1">Sign in</h2>
+            <p className="text-muted small mb-0">
+              Welcome back! Please sign in to your account
+            </p>
+          </div>
 
-          <Button color="dark" block className="w-100 mt-3" type="submit">
-            Sign in
-          </Button>
-        </Form>
+          {message && (
+            <div
+              className={`alert ${
+                message.includes("successful")
+                  ? "alert-success"
+                  : "alert-danger"
+              } py-2 px-3 mb-3`}
+            >
+              <small>{message}</small>
+            </div>
+          )}
 
-        <div className="text-center mt-2">
-          <a href="#" className="small text-decoration-none">
-            Forgot your password?
-          </a>
-        </div>
+          <Form onSubmit={handleLogin}>
+            <FormGroup className="mb-3">
+              <Label for="email" className="form-label fw-semibold text-dark">
+                Email
+              </Label>
+              <Input
+                id="email"
+                name="email"
+                placeholder="your@email.com"
+                type="email"
+                className="form-control py-2"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                style={{
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                }}
+              />
+            </FormGroup>
 
-        <div className="text-center my-3">
-          <hr />
-          <span
-            className="position-relative bg-white px-2 small text-muted"
-            style={{ top: "-14px" }}
-          >
-            or
-          </span>
-        </div>
+            <FormGroup className="mb-3">
+              <Label
+                for="password"
+                className="form-label fw-semibold text-dark"
+              >
+                Password
+              </Label>
+              <div className="position-relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  className="form-control py-2"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  style={{
+                    paddingRight: "2.5rem",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#6b7280",
+                    padding: "0.25rem",
+                  }}
+                  tabIndex={-1}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <FaEyeSlash size={14} />
+                  ) : (
+                    <FaEye size={14} />
+                  )}
+                </button>
+              </div>
+            </FormGroup>
 
-        {/* <Button
-          onClick={handleGoogleLogin}
-          className="w-100 border d-flex align-items-center justify-content-center gap-2 mb-2"
-        >
-          <img
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            alt="Google"
-            style={{ width: "20px", height: "20px" }}
-          />
-          Sign in with Google
-        </Button> */}
+            <div className="d-flex justify-content-end mb-3">
+              <a
+                href="#"
+                className="text-decoration-none small"
+                style={{ color: "#4F46E5", fontSize: "13px" }}
+              >
+                Forgot your password?
+              </a>
+            </div>
 
-        <div className="text-center mt-3 small">
-          Don’t have an account? <a href="/signup">Sign up</a>
+            <Button
+              type="submit"
+              className="w-100 py-2 fw-semibold"
+              style={{
+                backgroundColor: "#4F46E5",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "14px",
+              }}
+            >
+              Sign in
+            </Button>
+          </Form>
+
+          {/* Divider */}
+          <div className="position-relative my-4">
+            <hr className="text-muted" />
+            <span
+              className="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted"
+              style={{ fontSize: "12px" }}
+            >
+              or
+            </span>
+          </div>
+
+          {/* Google Login - Uncomment when ready */}
+          {/* <Button
+                  onClick={handleGoogleLogin}
+                  className="w-100 py-2 d-flex align-items-center justify-content-center gap-2 mb-3"
+                  style={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e2e8f0',
+                    color: '#374151',
+                    borderRadius: '8px',
+                    fontSize: '14px'
+                  }}
+                >
+                  <img
+                    src="https://www.svgrepo.com/show/475656/google-color.svg"
+                    alt="Google"
+                    style={{ width: "18px", height: "18px" }}
+                  />
+                  Sign in with Google
+                </Button> */}
+
+          {/* Sign up link */}
+          <div className="text-center">
+            <span className="text-muted small">
+              Don't have an account?{" "}
+              <a
+                href="/signup"
+                className="text-decoration-none fw-semibold"
+                style={{ color: "#4F46E5" }}
+              >
+                Sign up
+              </a>
+            </span>
+          </div>
         </div>
       </div>
     </div>

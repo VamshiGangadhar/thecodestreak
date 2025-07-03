@@ -7,6 +7,7 @@ import Dashboard from "./components/pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { UserProvider } from "./context/UserContext";
 import DailyChallenge from "./components/pages/DailyChallenge";
+import PracticePage from "./components/pages/practice";
 
 function App() {
   return (
@@ -33,6 +34,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/practice"
+            element={
+              <ProtectedRoute>
+                <PracticePage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* <Route path="/dashboard/profile" element={<ChooseLevel />} /> */}
         </Routes>
       </Router>

@@ -13,6 +13,7 @@ import {
 import AvatarDropdown from "../AvatarDropdown";
 import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import BrandHeader from "../BrandHeader";
 
 const APPLICATION_NAME = "TheCodeStreak";
 
@@ -235,8 +236,8 @@ function NavigationBar() {
     <nav style={navbarStyle}>
       <div style={containerStyle}>
         {/* Brand */}
-        <a href="/" style={brandStyle}>
-          {APPLICATION_NAME}
+        <a href="/" style={{ textDecoration: "none" }}>
+          <BrandHeader as="span" />
         </a>
 
         {/* Desktop Navigation */}
