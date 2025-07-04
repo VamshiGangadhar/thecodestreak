@@ -1,15 +1,3 @@
-
-[functions.test]
-enabled = true
-verify_jwt = true
-import_map = "./functions/test/deno.json"
-# Uncomment to specify a custom file path to the entrypoint.
-# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
-entrypoint = "./functions/test/index.ts"
-# Specifies static files to be bundled with the function. Supports glob patterns.
-# For example, if you want to serve static HTML pages in your function:
-# static_files = [ "./functions/test/*.html" ]
-
 [functions.auth]
 enabled = true
 verify_jwt = true
@@ -21,16 +9,6 @@ entrypoint = "./functions/auth/index.ts"
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/auth/*.html" ]
 
-[functions.get-user-dashboard]
-enabled = true
-verify_jwt = true
-import_map = "./functions/get-user-dashboard/deno.json"
-# Uncomment to specify a custom file path to the entrypoint.
-# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
-entrypoint = "./functions/get-user-dashboard/index.ts"
-# Specifies static files to be bundled with the function. Supports glob patterns.
-# For example, if you want to serve static HTML pages in your function:
-# static_files = [ "./functions/get-user-dashboard/*.html" ]
 
 [functions.user-engine]
 enabled = true
