@@ -124,17 +124,34 @@ const PracticeCompiler: React.FC = () => {
 
   return (
     <div
-      className="min-vh-100 d-flex justify-content-center align-items-center bg-light py-4 fade-in"
-      style={{ minHeight: "100vh", minWidth: "100vw" }}
+      className="min-vh-100 vw-100 d-flex flex-column justify-content-center align-items-center bg-light py-0 fade-in"
+      style={{
+        minHeight: "100vh",
+        minWidth: "100vw",
+        width: "100vw",
+        height: "100vh",
+        padding: 0,
+        margin: 0,
+        boxSizing: "border-box",
+        position: "relative",
+        top: "var(--navbar-height, 20px)",
+      }}
     >
       <Container
+        fluid
         style={{
-          maxWidth: "1400px",
-          width: "100%",
+          maxWidth: "100vw",
+          width: "100vw",
+          height: "calc(100vh - var(--navbar-height, 64px))",
+          minHeight: "calc(100vh - var(--navbar-height, 64px))",
+          minWidth: "100vw",
           boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-          borderRadius: "18px",
+          borderRadius: 0,
           background: "#fff",
           padding: 0,
+          margin: 0,
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         {/* Header */}
@@ -372,6 +389,14 @@ const PracticeCompiler: React.FC = () => {
         }
         @keyframes fadeIn {
           to { opacity: 1; }
+        }
+        :root {
+          --navbar-height: 64px;
+        }
+        @media (max-width: 768px) {
+          :root {
+            --navbar-height: 56px;
+          }
         }
       `}</style>
     </div>
