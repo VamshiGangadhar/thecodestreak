@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from "react";
 import {
-  Calendar,
-  Code,
   Trophy,
   Flame,
   Clock,
-  Target,
   TrendingUp,
   Award,
   PlayCircle,
-  ChevronRight,
-  Zap,
-  Star,
   CheckCircle2,
   BarChart3,
 } from "lucide-react";
 import { useUser } from "../../../context/UserContext";
+import { getDailyQuestionsForUser } from "./helper";
 
-// Challenge type definition
 type Challenge = {
   id: number;
   title: string;
@@ -72,7 +66,17 @@ const difficultyConfig = {
 
 const DailyChallenge = () => {
   const { user } = useUser(); // Assuming you have a user context
-  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (user?.id) {
+      getDailyQuestionsForUser(user.id).then((data) => {
+        console.log("Daily questions from Supabase:", data);
+      });
+    }
+  }, [user?.id]);
 
   // Use user context directly for available fields, and fallback to mock for only the missing ones
   const questionsToday = 2; // fallback mock
