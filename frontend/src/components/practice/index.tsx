@@ -122,9 +122,51 @@ const PracticeCompiler: React.FC = () => {
       setIsSubmitting
     );
 
+  // Add state for resizable panels
+  const [editorWidth, setEditorWidth] = useState<number>(
+    window.innerWidth * 0.55
+  );
+  const [isResizing, setIsResizing] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Handle mouse events for resizing
+  const startResizing = (e: React.MouseEvent) => {
+    setIsResizing(true);
+    document.body.style.cursor = "col-resize";
+  };
+  const stopResizing = () => {
+    setIsResizing(false);
+    document.body.style.cursor = "";
+  };
+  const resizePanel = (e: MouseEvent) => {
+    if (!isResizing || !containerRef.current) return;
+    const minWidth = 320;
+    const maxWidth = window.innerWidth - 320;
+    let newWidth =
+      e.clientX - containerRef.current.getBoundingClientRect().left;
+    if (newWidth < minWidth) newWidth = minWidth;
+    if (newWidth > maxWidth) newWidth = maxWidth;
+    setEditorWidth(newWidth);
+  };
+  React.useEffect(() => {
+    if (isResizing) {
+      window.addEventListener("mousemove", resizePanel);
+      window.addEventListener("mouseup", stopResizing);
+    } else {
+      window.removeEventListener("mousemove", resizePanel);
+      window.removeEventListener("mouseup", stopResizing);
+    }
+    return () => {
+      window.removeEventListener("mousemove", resizePanel);
+      window.removeEventListener("mouseup", stopResizing);
+    };
+    // eslint-disable-next-line
+  }, [isResizing]);
+
   return (
     <div
-      className="min-vh-100 vw-100 d-flex flex-column justify-content-center align-items-center bg-light py-0 fade-in"
+      ref={containerRef}
+      className="vw-100 d-flex flex-column bg-light fade-in"
       style={{
         minHeight: "100vh",
         minWidth: "100vw",
@@ -134,7 +176,8 @@ const PracticeCompiler: React.FC = () => {
         margin: 0,
         boxSizing: "border-box",
         position: "relative",
-        top: "var(--navbar-height, 20px)",
+         marginTop: "var(--navbar-height, 65px)",
+        // marginTop: "72px", // Increased margin for more space below navbar
       }}
     >
       <Container
@@ -142,8 +185,8 @@ const PracticeCompiler: React.FC = () => {
         style={{
           maxWidth: "100vw",
           width: "100vw",
-          height: "calc(100vh - var(--navbar-height, 64px))",
-          minHeight: "calc(100vh - var(--navbar-height, 64px))",
+          height: "calc(100vh - 80px)", // Match the new marginTop
+          minHeight: "calc(100vh - 80px)",
           minWidth: "100vw",
           boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
           borderRadius: 0,
@@ -155,7 +198,7 @@ const PracticeCompiler: React.FC = () => {
         }}
       >
         {/* Header */}
-        <Row className="mb-4">
+        <Row className="mb-2 mt-3" style={{ flex: "0 0 auto", margin: 0 }}>
           <Col>
             <div className="d-flex align-items-center justify-content-between">
               <div className="d-flex align-items-center gap-3">
@@ -222,14 +265,45 @@ const PracticeCompiler: React.FC = () => {
           </Col>
         </Row>
 
-        <Row>
+        {/* Main Panels Row - Use flex to fill vertical space */}
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            minHeight: 0,
+            height: "1px",
+            margin: 0,
+            overflow: "hidden",
+          }}
+        >
           {/* Left Panel - Monaco Code Editor */}
-          <Col lg={7} style={{ maxHeight: "70vh", overflowY: "auto" }}>
+          <div
+            style={{
+              width: editorWidth,
+              minWidth: 320,
+              maxWidth: "80vw",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              transition: isResizing ? "none" : "width 0.2s",
+              overflow: "hidden",
+            }}
+          >
             <Card
-              className="shadow-sm border-0"
-              style={{ height: "65vh", minHeight: 500, maxHeight: "65vh" }}
+              className="shadow-sm border-0 h-100"
+              style={{
+                flex: 1,
+                minHeight: 0,
+                marginBottom: 0,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+              }}
             >
-              <CardBody className="p-0">
+              <CardBody
+                className="p-0 d-flex flex-column"
+                style={{ flex: 1, minHeight: 0 }}
+              >
                 {/* Editor Header */}
                 <div className="border-bottom px-4 py-3">
                   <div className="d-flex align-items-center justify-content-between">
@@ -245,9 +319,8 @@ const PracticeCompiler: React.FC = () => {
                     </div>
                   </div>
                 </div>
-
                 {/* Monaco Editor */}
-                <div style={{ height: "calc(100% - 80px)" }}>
+                <div style={{ flex: 1, minHeight: 0 }}>
                   <PracticeEditor
                     code={code}
                     setCode={setCode}
@@ -259,15 +332,48 @@ const PracticeCompiler: React.FC = () => {
                 </div>
               </CardBody>
             </Card>
-          </Col>
-
+          </div>
+          {/* Resizer Divider */}
+          <div
+            onMouseDown={startResizing}
+            style={{
+              width: 8,
+              cursor: "col-resize",
+              background: isResizing ? "#4F46E5" : "#e0e0e0",
+              zIndex: 10,
+              height: "100%",
+              display: "inline-block",
+              position: "relative",
+              userSelect: "none",
+            }}
+          />
           {/* Right Panel - Test Cases & Results */}
-          <Col lg={5} style={{ maxHeight: "70vh", overflowY: "auto" }}>
+          <div
+            style={{
+              flex: 1,
+              minWidth: 320,
+              maxWidth: "80vw",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+            }}
+          >
             <Card
-              className="shadow-sm border-0"
-              style={{ height: "65vh", minHeight: 500, maxHeight: "65vh" }}
+              className="shadow-sm border-0 h-100"
+              style={{
+                flex: 1,
+                minHeight: 0,
+                marginBottom: 0,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+              }}
             >
-              <CardBody className="p-0">
+              <CardBody
+                className="p-0 d-flex flex-column"
+                style={{ flex: 1, minHeight: 0 }}
+              >
                 {/* Tabs Header */}
                 <div className="border-bottom">
                   <Nav tabs className="px-4">
@@ -311,7 +417,7 @@ const PracticeCompiler: React.FC = () => {
                 </div>
 
                 {/* Tab Content */}
-                <div style={{ height: "calc(100% - 60px)", overflow: "auto" }}>
+                <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
                   <TabContent activeTab={activeTab}>
                     <TabPane tabId="testcases" className="p-4">
                       <TestCaseList
@@ -335,7 +441,10 @@ const PracticeCompiler: React.FC = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="border-top p-4">
+                <div
+                  className="border-top p-4 bg-white"
+                  style={{ position: "sticky", bottom: 0, zIndex: 2 }}
+                >
                   <div className="d-grid gap-2">
                     <Button
                       color="primary"
@@ -379,8 +488,8 @@ const PracticeCompiler: React.FC = () => {
                 </div>
               </CardBody>
             </Card>
-          </Col>
-        </Row>
+          </div>
+        </div>
       </Container>
       <style>{`
         .fade-in {
@@ -396,6 +505,12 @@ const PracticeCompiler: React.FC = () => {
         @media (max-width: 768px) {
           :root {
             --navbar-height: 56px;
+          }
+        }
+        @media (max-width: 1200px) {
+          .shadow-sm.card {
+            min-width: 320px !important;
+            max-width: 100vw !important;
           }
         }
       `}</style>
