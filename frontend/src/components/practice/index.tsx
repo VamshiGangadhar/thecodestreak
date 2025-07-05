@@ -176,7 +176,7 @@ const PracticeCompiler: React.FC = () => {
         margin: 0,
         boxSizing: "border-box",
         position: "relative",
-         marginTop: "var(--navbar-height, 65px)",
+        marginTop: "var(--navbar-height, 65px)",
         // marginTop: "72px", // Increased margin for more space below navbar
       }}
     >
@@ -198,47 +198,58 @@ const PracticeCompiler: React.FC = () => {
         }}
       >
         {/* Header */}
-        <Row className="mb-2 mt-3" style={{ flex: "0 0 auto", margin: 0 }}>
-          <Col>
-            <div className="d-flex align-items-center justify-content-between">
-              <div className="d-flex align-items-center gap-3">
-                <div className="d-flex align-items-center gap-2">
-                  <Code className="text-primary" size={28} />
-                  <h1 className="h3 mb-0 fw-bold">Code Practice</h1>
-                </div>
-
-                <div className="d-flex align-items-center gap-2">
-                  <Label className="mb-0 fw-semibold small">Language:</Label>
-                  <Input
-                    type="select"
-                    value={selectedLanguage.id}
-                    onChange={(e) =>
-                      handleLanguageChange(
-                        e.target.value,
-                        setSelectedLanguage,
-                        setCode,
-                        setError,
-                        setTestCases,
-                        DEFAULT_CODE
-                      )
-                    }
-                    style={{ width: "140px", fontSize: "14px" }}
-                  >
-                    {LANGUAGES.map((lang) => (
-                      <option key={lang.id} value={lang.id}>
-                        {lang.name}
-                      </option>
-                    ))}
-                  </Input>
-                </div>
+        <Row
+          className="mt-2 gx-0"
+          style={{ flex: "0 0 auto", margin: 0, padding: 0 }}
+        >
+          <Col className="p-0">
+            <div
+              className="d-flex align-items-center justify-content-between bg-white border rounded-3 px-4 py-3"
+              style={{
+                boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                minHeight: 64,
+                marginBottom: 8,
+                marginLeft: 0,
+                marginRight: 0,
+                paddingLeft: 0,
+              }}
+            >
+              {/* Left: Title */}
+              <div className="d-flex align-items-center gap-2 flex-shrink-0">
+                <span
+                  style={{
+                    background: "#f1f5f9",
+                    borderRadius: "50%",
+                    padding: 6,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Code className="text-primary" size={24} />
+                </span>
+                <span
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: 700,
+                    color: "#1e293b",
+                  }}
+                >
+                  Code Practice
+                </span>
               </div>
 
-              <div className="d-flex gap-2">
+              {/* Right: Theme/Reset Buttons */}
+              <div className="d-flex gap-2 flex-shrink-0">
                 <Button
                   color="outline-secondary"
                   size="sm"
                   onClick={() => setIsDarkTheme(!isDarkTheme)}
                   className="d-flex align-items-center gap-1"
+                  style={{
+                    borderColor: "#e5e7eb",
+                    color: "#6366f1",
+                    background: "#f8fafc",
+                  }}
                 >
                   {isDarkTheme ? <Sun size={16} /> : <Moon size={16} />}
                   {isDarkTheme ? "Light" : "Dark"}
@@ -256,6 +267,11 @@ const PracticeCompiler: React.FC = () => {
                     )
                   }
                   className="d-flex align-items-center gap-1"
+                  style={{
+                    borderColor: "#e5e7eb",
+                    color: "#64748b",
+                    background: "#f8fafc",
+                  }}
                 >
                   <RefreshCw size={16} />
                   Reset
@@ -287,8 +303,73 @@ const PracticeCompiler: React.FC = () => {
               flexDirection: "column",
               transition: isResizing ? "none" : "width 0.2s",
               overflow: "hidden",
+              position: "relative", // <-- add for absolute positioning
             }}
           >
+            {/* Language Selector floating at top-right of editor panel */}
+            <div
+              style={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                zIndex: 20,
+                background: "#f8fafc",
+                borderRadius: 24,
+                boxShadow: "0 1px 4px rgba(99,102,241,0.07)",
+                padding: "6px 18px 6px 16px",
+                border: "1.5px solid #e5e7eb",
+                minWidth: 180,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <Label
+                className="mb-0 fw-semibold small"
+                style={{
+                  color: "#6366f1",
+                  fontSize: 13,
+                  letterSpacing: 0.2,
+                  marginRight: 6,
+                }}
+              >
+                Language
+              </Label>
+              <Input
+                type="select"
+                value={selectedLanguage.id}
+                onChange={(e) =>
+                  handleLanguageChange(
+                    e.target.value,
+                    setSelectedLanguage,
+                    setCode,
+                    setError,
+                    setTestCases,
+                    DEFAULT_CODE
+                  )
+                }
+                style={{
+                  width: "110px",
+                  fontSize: "14px",
+                  background: "#fff",
+                  border: "1.5px solid #c7d2fe",
+                  color: "#3730a3",
+                  borderRadius: 16,
+                  boxShadow: "0 1px 4px rgba(99,102,241,0.04)",
+                  fontWeight: 500,
+                  padding: "4px 10px",
+                  outline: "none",
+                  transition: "border 0.2s",
+                }}
+              >
+                {LANGUAGES.map((lang) => (
+                  <option key={lang.id} value={lang.id}>
+                    {lang.name}
+                  </option>
+                ))}
+              </Input>
+            </div>
+
             <Card
               className="shadow-sm border-0 h-100"
               style={{
@@ -304,21 +385,6 @@ const PracticeCompiler: React.FC = () => {
                 className="p-0 d-flex flex-column"
                 style={{ flex: 1, minHeight: 0 }}
               >
-                {/* Editor Header */}
-                <div className="border-bottom px-4 py-3">
-                  <div className="d-flex align-items-center justify-content-between">
-                    <div className="d-flex align-items-center gap-2">
-                      <FileText size={18} className="text-muted" />
-                      <span className="fw-semibold">Monaco Code Editor</span>
-                      <Badge color="success" className="text-white">
-                        VS Code Powered
-                      </Badge>
-                    </div>
-                    <div className="small text-muted">
-                      {selectedLanguage.name} • Professional IDE Experience
-                    </div>
-                  </div>
-                </div>
                 {/* Monaco Editor */}
                 <div style={{ flex: 1, minHeight: 0 }}>
                   <PracticeEditor
