@@ -1,5 +1,3 @@
-// supabase/functions/user-engine/index.ts
-
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
@@ -7,7 +5,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://thecodestreak.vercel.app",
   "http://localhost:54321", // Supabase local dev
-   "https://supabase.com",
+  "https://supabase.com",
 ];
 
 serve(async (req) => {
@@ -25,6 +23,7 @@ serve(async (req) => {
   }
 
   if (!isAllowedOrigin) {
+    console.warn("Request from disallowed origin:", origin);
     return new Response(
       JSON.stringify({
         success: false,
@@ -42,9 +41,24 @@ serve(async (req) => {
     Deno.env.get("SUPABASE_ANON_KEY")!
   );
 
-  const { step, payload } = await req.json();
+  let step, payload;
+
+  try {
+    const body = await req.json();
+    step = body.step;
+    payload = body.payload;
+    console.log("Received step:", step);
+    console.log("Received payload:", payload);
+  } catch (e) {
+    console.error("Failed to parse JSON:", e);
+    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+      status: 400,
+      headers: corsHeaders,
+    });
+  }
 
   if (!step || !payload) {
+    console.warn("Missing step or payload");
     return new Response(JSON.stringify({ error: "Missing step or payload" }), {
       status: 400,
       headers: corsHeaders,
@@ -55,9 +69,14 @@ serve(async (req) => {
     switch (step) {
       case "GET_DAILY_QUESTIONS_FOR_USER": {
         const { user_id } = payload;
-        if (!user_id) throw new Error("Missing user_id");
+        if (!user_id) {
+          console.error("Missing user_id in payload");
+          throw new Error("Missing user_id");
+        }
 
         const today = new Date().toISOString().split("T")[0];
+        console.log("Querying for user_id:", user_id);
+        console.log("Querying for assigned_date:", today);
 
         const { data: assignments, error } = await supabase
           .from("daily_assignments")
@@ -80,7 +99,12 @@ serve(async (req) => {
           .eq("assigned_date", today)
           .order("is_main", { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase query error:", error);
+          throw error;
+        }
+
+        console.log("Assignments returned:", assignments);
 
         return new Response(
           JSON.stringify({
@@ -92,11 +116,8 @@ serve(async (req) => {
         );
       }
 
-      // 🚀 Add more steps here like:
-      // case 'SUBMIT_QUESTION':
-      // case 'GET_USER_PROFILE':
-
       default:
+        console.warn("Unknown step received:", step);
         return new Response(
           JSON.stringify({ error: `Unknown step: ${step}` }),
           { status: 400, headers: corsHeaders }
