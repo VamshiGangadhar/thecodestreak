@@ -12,7 +12,7 @@ const allowedOrigins = [
 
 serve(async (req) => {
   const origin = req.headers.get("origin");
-  const isAllowedOrigin = allowedOrigins.includes(origin || "");
+  const isAllowedOrigin = !origin || allowedOrigins.includes(origin);
   const corsHeaders = {
     "Access-Control-Allow-Origin": isAllowedOrigin ? origin : allowedOrigins[0],
     "Access-Control-Allow-Headers":
