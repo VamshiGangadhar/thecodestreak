@@ -7,6 +7,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://thecodestreak.vercel.app",
   "http://localhost:54321", // Supabase local dev
+   "https://supabase.com",
 ];
 
 serve(async (req) => {
