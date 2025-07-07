@@ -1,36 +1,12 @@
 import React, { useState, useRef } from "react";
+import { Container, Row, Col, Button, Spinner } from "reactstrap";
 import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardBody,
-  Button,
-  Input,
-  Label,
-  FormGroup,
-  Spinner,
-  Alert,
-  Nav,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane,
-  Badge,
-} from "reactstrap";
-import {
-  Play,
   Code,
-  FileText,
   Terminal,
   RefreshCw,
-  Plus,
-  Trash2,
-  CheckCircle,
-  XCircle,
-  Clock,
   Moon,
   Sun,
+  ArrowLeftRight,
 } from "lucide-react";
 import { LANGUAGES } from "./static/languageConfiguration";
 import { DEFAULT_CODE } from "./static/defaultCode";
@@ -48,8 +24,7 @@ import {
 } from "./helper/helper";
 import { TestCase } from "./types";
 import PracticeEditor from "./PracticeEditor";
-import TestCaseList from "./TestCaseList";
-import ResultPanel from "./ResultPanel";
+import TestCasePanel from "./TestCasePanel";
 
 const PracticeCompiler: React.FC = () => {
   const [selectedLanguage, setSelectedLanguage] = useState(LANGUAGES[0]);
@@ -128,6 +103,7 @@ const PracticeCompiler: React.FC = () => {
   );
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isLeft, setIsLeft] = useState(true); // true: editor left, test panel right
 
   // Handle mouse events for resizing
   const startResizing = (e: React.MouseEvent) => {
@@ -177,15 +153,40 @@ const PracticeCompiler: React.FC = () => {
         boxSizing: "border-box",
         position: "relative",
         marginTop: "var(--navbar-height, 65px)",
-        // marginTop: "72px", // Increased margin for more space below navbar
       }}
     >
+      {/* Panel Switcher Button */}
+      <button
+        onClick={() => setIsLeft((prev) => !prev)}
+        style={{
+          position: "absolute",
+          top: 18,
+          right: 28,
+          background: isLeft ? "#6366f1" : "#7c3aed",
+          border: isLeft ? "2px solid #6366f1" : "2px solid #7c3aed",
+          borderRadius: 18,
+          padding: 6,
+          cursor: "pointer",
+          zIndex: 20,
+          boxShadow: "0 1px 4px rgba(0,0,0,0.10)",
+          width: 36,
+          height: 36,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "background 0.2s, border 0.2s",
+        }}
+        aria-label="Switch panel sides"
+        title="Switch panel sides"
+      >
+        <ArrowLeftRight size={20} color="#fff" />
+      </button>
       <Container
         fluid
         style={{
           maxWidth: "100vw",
           width: "100vw",
-          height: "calc(100vh - 80px)", // Match the new marginTop
+          height: "calc(100vh - 80px)",
           minHeight: "calc(100vh - 80px)",
           minWidth: "100vw",
           boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
@@ -290,6 +291,7 @@ const PracticeCompiler: React.FC = () => {
             height: "1px",
             margin: 0,
             overflow: "hidden",
+            flexDirection: isLeft ? "row" : "row-reverse",
           }}
         >
           {/* Left Panel - Monaco Code Editor */}
@@ -303,101 +305,22 @@ const PracticeCompiler: React.FC = () => {
               flexDirection: "column",
               transition: isResizing ? "none" : "width 0.2s",
               overflow: "hidden",
-              position: "relative", // <-- add for absolute positioning
+              position: "relative",
+              margin: isLeft ? "0 8px 0 0" : "0 0 0 8px",
             }}
           >
-            {/* Language Selector floating at top-right of editor panel */}
-            <div
-              style={{
-                position: "absolute",
-                top: 16,
-                right: 16,
-                zIndex: 20,
-                background: "#f8fafc",
-                borderRadius: 24,
-                boxShadow: "0 1px 4px rgba(99,102,241,0.07)",
-                padding: "6px 18px 6px 16px",
-                border: "1.5px solid #e5e7eb",
-                minWidth: 180,
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              <Label
-                className="mb-0 fw-semibold small"
-                style={{
-                  color: "#6366f1",
-                  fontSize: 13,
-                  letterSpacing: 0.2,
-                  marginRight: 6,
-                }}
-              >
-                Language
-              </Label>
-              <Input
-                type="select"
-                value={selectedLanguage.id}
-                onChange={(e) =>
-                  handleLanguageChange(
-                    e.target.value,
-                    setSelectedLanguage,
-                    setCode,
-                    setError,
-                    setTestCases,
-                    DEFAULT_CODE
-                  )
-                }
-                style={{
-                  width: "110px",
-                  fontSize: "14px",
-                  background: "#fff",
-                  border: "1.5px solid #c7d2fe",
-                  color: "#3730a3",
-                  borderRadius: 16,
-                  boxShadow: "0 1px 4px rgba(99,102,241,0.04)",
-                  fontWeight: 500,
-                  padding: "4px 10px",
-                  outline: "none",
-                  transition: "border 0.2s",
-                }}
-              >
-                {LANGUAGES.map((lang) => (
-                  <option key={lang.id} value={lang.id}>
-                    {lang.name}
-                  </option>
-                ))}
-              </Input>
-            </div>
-
-            <Card
-              className="shadow-sm border-0 h-100"
-              style={{
-                flex: 1,
-                minHeight: 0,
-                marginBottom: 0,
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <CardBody
-                className="p-0 d-flex flex-column"
-                style={{ flex: 1, minHeight: 0 }}
-              >
-                {/* Monaco Editor */}
-                <div style={{ flex: 1, minHeight: 0 }}>
-                  <PracticeEditor
-                    code={code}
-                    setCode={setCode}
-                    selectedLanguage={selectedLanguage}
-                    isDarkTheme={isDarkTheme}
-                    editorRef={editorRef}
-                    handleEditorDidMount={handleEditorDidMount}
-                  />
-                </div>
-              </CardBody>
-            </Card>
+            <PracticeEditor
+              code={code}
+              setCode={setCode}
+              selectedLanguage={selectedLanguage}
+              setSelectedLanguage={setSelectedLanguage}
+              setError={setError}
+              setTestCases={setTestCases}
+              isDarkTheme={isDarkTheme}
+              editorRef={editorRef}
+              handleEditorDidMount={handleEditorDidMount}
+              DEFAULT_CODE={DEFAULT_CODE}
+            />
           </div>
           {/* Resizer Divider */}
           <div
@@ -423,137 +346,23 @@ const PracticeCompiler: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               overflow: "hidden",
+              margin: isLeft ? "0 0 0 8px" : "0 8px 0 0",
             }}
           >
-            <Card
-              className="shadow-sm border-0 h-100"
-              style={{
-                flex: 1,
-                minHeight: 0,
-                marginBottom: 0,
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <CardBody
-                className="p-0 d-flex flex-column"
-                style={{ flex: 1, minHeight: 0 }}
-              >
-                {/* Tabs Header */}
-                <div className="border-bottom">
-                  <Nav tabs className="px-4">
-                    <NavItem>
-                      <NavLink
-                        className={`cursor-pointer ${
-                          activeTab === "testcases" ? "active" : ""
-                        }`}
-                        onClick={() => setActiveTab("testcases")}
-                        style={{ fontSize: "14px", fontWeight: "600" }}
-                      >
-                        <Terminal size={16} className="me-1" />
-                        Test Cases
-                        {totalTests > 0 && (
-                          <Badge
-                            color={
-                              passedTests === totalTests
-                                ? "success"
-                                : "secondary"
-                            }
-                            className="ms-2"
-                          >
-                            {passedTests}/{totalTests}
-                          </Badge>
-                        )}
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink
-                        className={`cursor-pointer ${
-                          activeTab === "result" ? "active" : ""
-                        }`}
-                        onClick={() => setActiveTab("result")}
-                        style={{ fontSize: "14px", fontWeight: "600" }}
-                      >
-                        <CheckCircle size={16} className="me-1" />
-                        Result
-                      </NavLink>
-                    </NavItem>
-                  </Nav>
-                </div>
-
-                {/* Tab Content */}
-                <div style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
-                  <TabContent activeTab={activeTab}>
-                    <TabPane tabId="testcases" className="p-4">
-                      <TestCaseList
-                        testCases={testCases}
-                        isRunning={isRunning}
-                        runTestCase={runTestCase}
-                        removeTestCase={removeTestCase}
-                        updateTestCase={updateTestCase}
-                        addTestCase={addTestCase}
-                      />
-                    </TabPane>
-
-                    <TabPane tabId="result" className="p-4">
-                      <ResultPanel
-                        totalTests={totalTests}
-                        passedTests={passedTests}
-                        error={error}
-                      />
-                    </TabPane>
-                  </TabContent>
-                </div>
-
-                {/* Action Buttons */}
-                <div
-                  className="border-top p-4 bg-white"
-                  style={{ position: "sticky", bottom: 0, zIndex: 2 }}
-                >
-                  <div className="d-grid gap-2">
-                    <Button
-                      color="primary"
-                      onClick={runAll}
-                      disabled={isRunning || testCases.length === 0}
-                      className="d-flex align-items-center justify-content-center gap-2"
-                      style={{ backgroundColor: "#4F46E5", border: "none" }}
-                    >
-                      {isRunning ? (
-                        <>
-                          <Spinner size="sm" />
-                          Running Tests...
-                        </>
-                      ) : (
-                        <>
-                          <Play size={16} />
-                          Run All Tests
-                        </>
-                      )}
-                    </Button>
-
-                    <Button
-                      color="success"
-                      onClick={submit}
-                      disabled={isSubmitting || testCases.length === 0}
-                      className="d-flex align-items-center justify-content-center gap-2"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Spinner size="sm" />
-                          Submitting...
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle size={16} />
-                          Submit Solution
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
+            <TestCasePanel
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              testCases={testCases}
+              isRunning={isRunning}
+              isSubmitting={isSubmitting}
+              runTestCase={runTestCase}
+              removeTestCase={removeTestCase}
+              updateTestCase={updateTestCase}
+              addTestCase={addTestCase}
+              runAll={runAll}
+              submit={submit}
+              error={error}
+            />
           </div>
         </div>
       </Container>

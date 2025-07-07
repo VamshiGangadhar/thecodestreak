@@ -11,52 +11,7 @@ import {
 } from "lucide-react";
 import { useUser } from "../../../context/UserContext";
 import { getDailyQuestionsForUser } from "./helper";
-
-type Challenge = {
-  id: number;
-  title: string;
-  description: string;
-  difficulty: keyof typeof difficultyConfig;
-  points: number;
-  timeEstimate: string;
-  solved: boolean;
-  category: string;
-};
-
-// Mock challenge data
-const mockChallenges: Challenge[] = [
-  {
-    id: 1,
-    title: "Reverse a String",
-    description: "Given a string, reverse the order of characters.",
-    difficulty: "Easy",
-    points: 10,
-    timeEstimate: "5-10 min",
-    solved: false,
-    category: "String Manipulation",
-  },
-  {
-    id: 2,
-    title: "Find the Maximum Subarray Sum",
-    description:
-      "Given an array of integers, find the contiguous subarray with the largest sum.",
-    difficulty: "Medium",
-    points: 25,
-    timeEstimate: "15-20 min",
-    solved: false,
-    category: "Dynamic Programming",
-  },
-  {
-    id: 3,
-    title: "Merge K Sorted Lists",
-    description: "Merge k sorted linked lists into one sorted linked list.",
-    difficulty: "Hard",
-    points: 50,
-    timeEstimate: "25-35 min",
-    solved: false,
-    category: "Linked Lists",
-  },
-];
+import ChallengeCard, { Challenge } from "./components/ChallengeCard";
 
 const difficultyConfig = {
   Easy: { color: "#059669", bgColor: "#ecfdf5", borderColor: "#059669" },
@@ -64,42 +19,80 @@ const difficultyConfig = {
   Hard: { color: "#dc2626", bgColor: "#fef2f2", borderColor: "#dc2626" },
 };
 
+// types for questions q
+type Question = {
+  questions: {
+    id: string | number;
+    title: string;
+    description: string;
+    difficulty: "easy" | "medium" | "hard";
+    level: string;
+  };
+  completed: boolean;
+  is_main: boolean;
+  assigned_date: string;
+};
+
 const DailyChallenge = () => {
-  const { user } = useUser(); // Assuming you have a user context
+  const { user } = useUser();
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(
     null
   );
+  const [dailyChallengeQuestions, setDailyChallengeQuestions] = useState<
+    Challenge[]
+  >([]);
 
   useEffect(() => {
     if (user?.id) {
       getDailyQuestionsForUser(user.id).then((data) => {
-        console.log("Daily questions from Supabase:", data);
+        const parsedData = typeof data === "string" ? JSON.parse(data) : data;
+
+        if (parsedData.daily_questions) {
+          const cleanedDailyQuestions = parsedData.daily_questions.map(
+            (q: Question) => {
+              return {
+                id: q.questions.id,
+                title: q.questions.title,
+                description: q.questions.description,
+                difficulty: q.questions.difficulty,
+                level: q.questions.level,
+                completed: q.completed,
+                is_main: q.is_main,
+                assigned_date: q.assigned_date,
+              };
+            }
+          );
+
+          console.log("Cleaned Daily Questions:", cleanedDailyQuestions);
+          setDailyChallengeQuestions(cleanedDailyQuestions);
+        } else {
+          console.error("daily_questions is undefined");
+        }
       });
     }
   }, [user?.id]);
 
-  // Use user context directly for available fields, and fallback to mock for only the missing ones
-  const questionsToday = 2; // fallback mock
-  const totalQuestions = 15; // fallback mock
-  const dailyGoal = 3; // fallback mock
+  const questionsToday = 2;
+  const totalQuestions = 15;
+  const dailyGoal = 3;
 
   const containerStyle: React.CSSProperties = {
     minHeight: "100vh",
-    width: "100vw", // Use full viewport width
+    width: "100vw",
     backgroundColor: "#f8fafc",
-    paddingTop: "100px", // Account for fixed navbar
+    paddingTop: "100px",
     paddingBottom: "40px",
     fontFamily: "system-ui, -apple-system, sans-serif",
   };
 
   const contentStyle: React.CSSProperties = {
-    width: "100vw", // Use full viewport width
+    width: "100vw",
     minHeight: "100vh",
     margin: 0,
     padding: 0,
     display: "flex",
     flexDirection: "column",
-    alignItems: "center", // Center all children horizontally
+    alignItems: "center",
     backgroundColor: "#f8fafc",
   };
 
@@ -223,216 +216,6 @@ const DailyChallenge = () => {
     </div>
   );
 
-  type Challenge = {
-    id: number;
-    title: string;
-    description: string;
-    difficulty: keyof typeof difficultyConfig;
-    points: number;
-    timeEstimate: string;
-    solved: boolean;
-    category: string;
-  };
-
-  const ChallengeCard = ({ challenge }: { challenge: Challenge }) => {
-    const diffConfig = difficultyConfig[challenge.difficulty];
-
-    return (
-      <div
-        style={{
-          ...cardStyle,
-          cursor: "pointer",
-          transition: "all 0.2s ease",
-          position: "relative",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "translateY(-2px)";
-          e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.1)";
-        }}
-        onClick={() => setSelectedChallenge(challenge)}
-      >
-        {/* Header */}
-        <div
-          style={{
-            background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
-            padding: "24px",
-            color: "white",
-            position: "relative",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "12px",
-            }}
-          >
-            <span
-              style={{
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                padding: "4px 12px",
-                borderRadius: "20px",
-                fontSize: "12px",
-                fontWeight: "500",
-              }}
-            >
-              {challenge.category}
-            </span>
-            <span
-              style={{
-                backgroundColor: diffConfig.bgColor,
-                color: diffConfig.color,
-                padding: "4px 12px",
-                borderRadius: "20px",
-                fontSize: "12px",
-                fontWeight: "600",
-              }}
-            >
-              {challenge.difficulty}
-            </span>
-          </div>
-
-          <h3
-            style={{
-              fontSize: "20px",
-              fontWeight: "bold",
-              margin: "0 0 8px 0",
-              lineHeight: "1.3",
-            }}
-          >
-            {challenge.title}
-          </h3>
-
-          <p
-            style={{
-              fontSize: "14px",
-              color: "rgba(255, 255, 255, 0.8)",
-              margin: 0,
-              lineHeight: "1.4",
-            }}
-          >
-            {challenge.description}
-          </p>
-        </div>
-
-        {/* Content */}
-        <div style={{ padding: "24px" }}>
-          {/* Stats */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "16px",
-              marginBottom: "20px",
-            }}
-          >
-            <div
-              style={{
-                textAlign: "center",
-                padding: "12px",
-                backgroundColor: "#dbeafe",
-                borderRadius: "8px",
-              }}
-            >
-              <Trophy
-                size={20}
-                color="#2563eb"
-                style={{ margin: "0 auto 4px" }}
-              />
-              <p
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  color: "#2563eb",
-                  margin: "0 0 2px 0",
-                }}
-              >
-                {challenge.points}
-              </p>
-              <p
-                style={{
-                  fontSize: "12px",
-                  color: "#6b7280",
-                  margin: 0,
-                }}
-              >
-                Points
-              </p>
-            </div>
-
-            <div
-              style={{
-                textAlign: "center",
-                padding: "12px",
-                backgroundColor: "#f3e8ff",
-                borderRadius: "8px",
-              }}
-            >
-              <Clock
-                size={20}
-                color="#7c3aed"
-                style={{ margin: "0 auto 4px" }}
-              />
-              <p
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  color: "#7c3aed",
-                  margin: "0 0 2px 0",
-                }}
-              >
-                {challenge.timeEstimate.split("-")[0]}
-              </p>
-              <p
-                style={{
-                  fontSize: "12px",
-                  color: "#6b7280",
-                  margin: 0,
-                }}
-              >
-                Minutes
-              </p>
-            </div>
-          </div>
-
-          {/* Solve Button */}
-          <button
-            style={{
-              width: "100%",
-              padding: "12px 16px",
-              backgroundColor: "#2563eb",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              fontSize: "14px",
-              fontWeight: "500",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              transition: "all 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#1d4ed8";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#2563eb";
-            }}
-          >
-            <PlayCircle size={16} />
-            Solve
-          </button>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div style={containerStyle}>
       <div style={contentStyle}>
@@ -506,8 +289,12 @@ const DailyChallenge = () => {
           </div>
 
           <div style={challengesGridStyle}>
-            {mockChallenges.map((challenge) => (
-              <ChallengeCard key={challenge.id} challenge={challenge} />
+            {dailyChallengeQuestions.map((challenge) => (
+              <ChallengeCard
+                key={challenge.id}
+                challenge={challenge}
+                setSelectedChallenge={setSelectedChallenge}
+              />
             ))}
           </div>
         </div>
